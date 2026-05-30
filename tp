@@ -12,31 +12,26 @@ gui.ResetOnSpawn = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 220, 0, 160)
-frame.Position = UDim2.new(0.5, -110, 0.5, -80)
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.5, -100, 0.5, -50)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.BorderSizePixel = 0
 frame.Parent = gui
 
 Instance.new("UICorner", frame)
 
-local function makeButton(text, y, color)
-	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(0.85, 0, 0, 40)
-	b.Position = UDim2.new(0.075, 0, 0, y)
-	b.Text = text
-	b.TextScaled = true
-	b.BackgroundColor3 = color
-	b.Parent = frame
-	Instance.new("UICorner", b)
-	return b
-end
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.85, 0, 0.6, 0)
+button.Position = UDim2.new(0.075, 0, 0.2, 0)
+button.Text = "TP BEST"
+button.TextScaled = true
+button.BackgroundColor3 = Color3.fromRGB(80, 170, 255)
+button.Parent = frame
 
-local tpButton = makeButton("TELEPORT", 10, Color3.fromRGB(80, 170, 255))
-local bestButton = makeButton("TP TO BEST", 60, Color3.fromRGB(255, 170, 60))
+Instance.new("UICorner", button)
 
 ------------------------------------------------
--- LIST OF TARGETS
+-- TARGET LIST
 ------------------------------------------------
 local targets = {
 	"Strawberry Elephant",
@@ -58,7 +53,7 @@ local targets = {
 }
 
 ------------------------------------------------
--- TELEPORT HELPERS
+-- HELPERS
 ------------------------------------------------
 local function getRoot()
 	local char = player.Character
@@ -66,7 +61,7 @@ local function getRoot()
 	return char:FindFirstChild("HumanoidRootPart")
 end
 
-local function tpToPart(part)
+local function tpTo(part)
 	local root = getRoot()
 	if root and part then
 		root.CFrame = part.CFrame + Vector3.new(0, 3, 0)
@@ -74,35 +69,18 @@ local function tpToPart(part)
 end
 
 ------------------------------------------------
--- 2 STAGE TELEPORT
+-- MAIN FUNCTION
 ------------------------------------------------
-tpButton.MouseButton1Click:Connect(function()
+button.MouseButton1Click:Connect(function()
 	local root = getRoot()
 	if not root then return end
 
-	-- Stage 1
+	-- STAGE 1: fixed coords
 	root.CFrame = CFrame.new(-441, -6.3, 52.1)
 
 	task.wait(0.3)
 
-	-- Stage 2 → Meowl
-	local m = workspace:FindFirstChild("Meowl")
-	if m then
-		if m:IsA("Model") then
-			local part = m:FindFirstChildWhichIsA("BasePart")
-			if part then
-				tpToPart(part)
-			end
-		elseif m:IsA("BasePart") then
-			tpToPart(m)
-		end
-	end
-end)
-
-------------------------------------------------
--- TP TO BEST (FIRST FOUND IN LIST)
-------------------------------------------------
-bestButton.MouseButton1Click:Connect(function()
+	-- STAGE 2: search list
 	for _, name in ipairs(targets) do
 		local obj = workspace:FindFirstChild(name)
 
@@ -110,11 +88,11 @@ bestButton.MouseButton1Click:Connect(function()
 			if obj:IsA("Model") then
 				local part = obj:FindFirstChildWhichIsA("BasePart")
 				if part then
-					tpToPart(part)
+					tpTo(part)
 					return
 				end
 			elseif obj:IsA("BasePart") then
-				tpToPart(obj)
+				tpTo(obj)
 				return
 			end
 		end
